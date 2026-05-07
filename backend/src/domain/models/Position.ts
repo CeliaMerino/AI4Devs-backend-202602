@@ -83,5 +83,43 @@ export class Position {
         if (!data) return null;
         return new Position(data);
     }
+
+    static async findCandidatesByPositionId(positionId: number) {
+        return await prisma.application.findMany({
+            where: { positionId: Number(positionId) },
+            select: {
+                id: true,
+                applicationDate: true,
+                notes: true,
+                candidate: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                        phone: true,
+                    },
+                },
+                interviewStep: {
+                    select: {
+                        id: true,
+                        name: true,
+                        orderIndex: true,
+                    },
+                },
+                interviews: {
+                    select: {
+                        id: true,
+                        interviewDate: true,
+                        result: true,
+                        score: true,
+                        notes: true,
+                    },
+                    orderBy: { interviewDate: 'desc' },
+                },
+            },
+            orderBy: { applicationDate: 'desc' },
+        });
+    }
 }
 

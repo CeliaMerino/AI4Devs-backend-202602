@@ -50,4 +50,32 @@ export class Application {
         if (!data) return null;
         return new Application(data);
     }
+
+    static async findOneByCandidate(applicationId: number, candidateId: number) {
+        // Paso 1: validar que la application existe y pertenece al candidate
+        const app = await prisma.application.findFirst({
+            where: {
+                id: applicationId,
+                candidateId: Number(candidateId),
+            },
+            select: { id: true, positionId: true, currentInterviewStep: true },
+        });
+        return app;
+    }
+
+    static async updateCurrentInterviewStep(applicationId: number, nextInterviewStepId: number) {
+        // Paso 2: actualizar
+        const updated = await prisma.application.update({
+            where: { id: applicationId },
+            data: { currentInterviewStep: nextInterviewStepId },
+            select: {
+                id: true,
+                candidateId: true,
+                positionId: true,
+                currentInterviewStep: true,
+            },
+        });
+
+        return updated;
+    }
 }
